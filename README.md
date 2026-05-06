@@ -79,8 +79,6 @@ Import dans n8n :
 | `Zabbix account` | Zabbix API | Nodes `Zabbix Acquittement` et `Zabbix Get Metrics` |
 | OpenAI | OpenAI API key | Node `OpenAI Chat Model` |
 
-> ⚠️ Le workflow contient en dur des `App-Token` et `user_token` GLPI. **À remplacer** par des credentials n8n typés `HTTP Header Auth` avant tout usage en prod.
-
 ### Payload Webhook attendu (depuis Zabbix)
 
 ```json
