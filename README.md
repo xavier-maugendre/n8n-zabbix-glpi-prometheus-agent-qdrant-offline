@@ -1,0 +1,1 @@
+# n8n-zabbix-glpi-prometheus-agent-qdrant-offline
