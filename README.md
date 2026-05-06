@@ -7,15 +7,31 @@
 ![Loki](https://img.shields.io/badge/Loki-logs-yellow?logo=grafana&logoColor=white)
 ![Qdrant](https://img.shields.io/badge/Qdrant-vector%20store-red?logo=qdrant&logoColor=white)
 ![Ollama](https://img.shields.io/badge/Ollama-embeddings-black?logo=ollama&logoColor=white)
-![OpenAI](https://img.shields.io/badge/OpenAI-LLM-412991?logo=openai&logoColor=white)
+![Gemma](https://img.shields.io/badge/Gemma-4-4285F4?logo=google&logoColor=white)
+![100% Local](https://img.shields.io/badge/100%25-local%20%2F%20offline-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-> 🇬🇧 English speakers: n8n workflow that turns Zabbix alerts into AI-diagnosed GLPI tickets, auto-closes them on resolution, and feeds resolved cases into a Qdrant vector store for future RAG-based suggestions.
+> 🇬🇧 English speakers: 100% on-prem n8n workflow that turns Zabbix alerts into AI-diagnosed GLPI tickets using a local Gemma model — no data sent to OpenAI, Gemini, Claude or any external API. Auto-closes tickets on resolution and feeds resolved cases into a Qdrant vector store for RAG.
+
+---
+
+## 🔒 Pourquoi "offline" ?
+
+**Aucune donnée ne quitte ton infrastructure.** Le diagnostic IA, les embeddings et le stockage vectoriel tournent **intégralement en local** :
+
+- **LLM** : Gemma 4 servi en local (via une API compatible OpenAI — LM Studio, Ollama, vLLM…)
+- **Embeddings** : `nomic-embed-text` via Ollama, en local
+- **Vector store** : Qdrant self-hosted
+
+Le node n8n s'appelle `OpenAI Chat Model` mais c'est juste le **type de node LangChain** utilisé : il pointe en réalité vers **ton serveur local** qui expose une API au format OpenAI. Aucun appel sortant vers `api.openai.com`, `api.anthropic.com`, `generativelanguage.googleapis.com` ou autre service tiers.
+
+Idéal pour les environnements souverains, OIV, OSE, ou simplement pour ne pas fuiter ses logs et ses incidents vers un cloud public.
 
 ---
 
 ## ✨ Fonctionnalités
 
+- **100% local / offline** — LLM, embeddings et vector store tournent **on-prem**, aucune donnée envoyée à un service tiers (pas d'OpenAI, Gemini, Claude…)
 - **Webhook unique pour PROBLEM et OK** — un seul point d'entrée Zabbix gère création et clôture via une branche conditionnelle
 - **Création automatique de ticket GLPI** — ouverture, association à l'asset (Computer) via le hostname, urgence et contenu pré-remplis
 - **Diagnostic IA croisé multi-sources** — l'agent corrèle l'alerte Zabbix, les métriques `item.get` Zabbix, les métriques Prometheus/cAdvisor/process_exporter et les logs Loki des 5 dernières minutes
@@ -38,8 +54,8 @@
 | ITSM | GLPI 10.x (REST API : `/initSession`, `/search/Computer`, `/Ticket`, `/ITILSolution`) |
 | Métriques système | Prometheus + node_exporter + cAdvisor + process_exporter |
 | Logs | Loki (`/loki/api/v1/query_range`) |
-| LLM | OpenAI Chat Model (via node LangChain n8n) |
-| Embeddings | Ollama / serveur compatible OpenAI sur `:1234/v1/embeddings` |
+| LLM | **Gemma 4** servi en local (via API OpenAI-compatible : LM Studio, Ollama, vLLM…) |
+| Embeddings | `nomic-embed-text` via Ollama (local, sur `:1234/v1/embeddings`) |
 | Vector store | Qdrant (collection `glpi_incidents`) |
 | Auth Webhook | Header Auth (token partagé Zabbix → n8n) |
 
@@ -77,7 +93,11 @@ Import dans n8n :
 |------------|------|-------------|
 | `Header - Zabbix Token` | HTTP Header Auth | Node `Webhook` (auth entrante depuis Zabbix) |
 | `Zabbix account` | Zabbix API | Nodes `Zabbix Acquittement` et `Zabbix Get Metrics` |
-| OpenAI | OpenAI API key | Node `OpenAI Chat Model` |
+| `OpenAI account` | OpenAI API key | Node `OpenAI Chat Model` — ⚠️ pointer vers **ton endpoint local** (LM Studio, vLLM…), pas vers `api.openai.com` |
+| `Ollama account` | Ollama API | Node `Embeddings Ollama` (utilisé par le tool Qdrant Vector Store) |
+| `QdrantApi account` | Qdrant API | Node `Qdrant Vector Store` |
+
+> ⚠️ Le workflow contient en dur des `App-Token` et `user_token` GLPI. **À remplacer** par des credentials n8n typés `HTTP Header Auth` avant tout usage en prod.
 
 ### Payload Webhook attendu (depuis Zabbix)
 
@@ -198,7 +218,7 @@ Règles imposées au modèle :
 
 ```
 n8n-zabbix-glpi-aiops/
-├── workflow.json   # Workflow n8n exporté
+├── Création_de_ticket_offline.json   # Workflow n8n exporté
 └── README.md
 ```
 
