@@ -198,7 +198,7 @@ Règles imposées au modèle :
 
 ```
 n8n-zabbix-glpi-aiops/
-├── Création_de_ticket_offline.json   # Workflow n8n exporté
+├── workflow.json   # Workflow n8n exporté
 └── README.md
 ```
 
