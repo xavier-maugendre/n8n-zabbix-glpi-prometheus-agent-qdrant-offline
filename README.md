@@ -16,6 +16,7 @@
 
 ---
 <img width="1536" height="1024" alt="Architecture" src="https://github.com/user-attachments/assets/1bb6740f-c106-4dee-8290-465081ee120d" />
+
 ---
 ## 🔒 Pourquoi "offline" ?
 
