@@ -1,3 +1,4 @@
+
 # 🎛️ n8n-zabbix-glpi-aiops — Création & clôture automatique de tickets GLPI avec diagnostic IA
 
 ![n8n](https://img.shields.io/badge/n8n-workflow-blue?logo=n8n&logoColor=white)
@@ -14,7 +15,8 @@
 > 🇬🇧 English speakers: 100% on-prem n8n workflow that turns Zabbix alerts into AI-diagnosed GLPI tickets using a local Gemma model — no data sent to OpenAI, Gemini, Claude or any external API. Auto-closes tickets on resolution and feeds resolved cases into a Qdrant vector store for RAG.
 
 ---
-
+<img width="1536" height="1024" alt="Architecture" src="https://github.com/user-attachments/assets/1bb6740f-c106-4dee-8290-465081ee120d" />
+---
 ## 🔒 Pourquoi "offline" ?
 
 **Aucune donnée ne quitte ton infrastructure.** Le diagnostic IA, les embeddings et le stockage vectoriel tournent **intégralement en local** :
